@@ -1,5 +1,6 @@
 -- name: CreateSearchLog :one
 INSERT INTO search_log (
+    search_id,
     user_id,
     search_query,
     search_filters,
@@ -8,7 +9,8 @@ INSERT INTO search_log (
     $1,
     $2,
     $3,
-    $4
+    $4,
+    $5
 ) RETURNING *;
 
 -- name: GetSearchLogList :many

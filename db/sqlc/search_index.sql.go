@@ -7,8 +7,6 @@ package db
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createSearchIndex = `-- name: CreateSearchIndex :one
@@ -26,10 +24,10 @@ INSERT INTO search_index(
 `
 
 type CreateSearchIndexParams struct {
-	ProductID         string      `json:"product_id"`
-	ProductName       string      `json:"product_name"`
-	ProductDesc       pgtype.Text `json:"product_desc"`
-	ProductAttributes []byte      `json:"product_attributes"`
+	ProductID         string `json:"product_id"`
+	ProductName       string `json:"product_name"`
+	ProductDesc       string `json:"product_desc"`
+	ProductAttributes []byte `json:"product_attributes"`
 }
 
 func (q *Queries) CreateSearchIndex(ctx context.Context, arg CreateSearchIndexParams) (SearchIndex, error) {

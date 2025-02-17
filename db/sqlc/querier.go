@@ -7,7 +7,7 @@ package db
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
 type Querier interface {
@@ -15,7 +15,7 @@ type Querier interface {
 	CreateSearchLog(ctx context.Context, arg CreateSearchLogParams) (SearchLog, error)
 	GetSearchIndexByProductId(ctx context.Context, productID string) ([]SearchIndex, error)
 	GetSearchLogByTime(ctx context.Context, arg GetSearchLogByTimeParams) ([]SearchLog, error)
-	GetSearchLogByUserId(ctx context.Context, userID pgtype.UUID) ([]SearchLog, error)
+	GetSearchLogByUserId(ctx context.Context, userID uuid.UUID) ([]SearchLog, error)
 	GetSearchLogList(ctx context.Context) ([]SearchLog, error)
 }
 

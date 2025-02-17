@@ -8,11 +8,13 @@ package db
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createSearchLog = `-- name: CreateSearchLog :one
 INSERT INTO search_log (
+    search_id,
     user_id,
     search_query,
     search_filters,
@@ -21,19 +23,22 @@ INSERT INTO search_log (
     $1,
     $2,
     $3,
-    $4
+    $4,
+    $5
 ) RETURNING search_id, user_id, search_query, search_filters, results_count, searched_at
 `
 
 type CreateSearchLogParams struct {
-	UserID        pgtype.UUID `json:"user_id"`
-	SearchQuery   string      `json:"search_query"`
-	SearchFilters []byte      `json:"search_filters"`
-	ResultsCount  int32       `json:"results_count"`
+	SearchID      uuid.UUID `json:"search_id"`
+	UserID        uuid.UUID `json:"user_id"`
+	SearchQuery   string    `json:"search_query"`
+	SearchFilters []byte    `json:"search_filters"`
+	ResultsCount  int32     `json:"results_count"`
 }
 
 func (q *Queries) CreateSearchLog(ctx context.Context, arg CreateSearchLogParams) (SearchLog, error) {
 	row := q.db.QueryRow(ctx, createSearchLog,
+		arg.SearchID,
 		arg.UserID,
 		arg.SearchQuery,
 		arg.SearchFilters,
@@ -61,8 +66,8 @@ WHERE
 `
 
 type GetSearchLogByTimeParams struct {
-	SearchedAt   pgtype.TIMESTAMP(0) `json:"searched_at"`
-	SearchedAt_2 pgtype.TIMESTAMP(0) `json:"searched_at_2"`
+	SearchedAt   pgtype.Timestamp `json:"searched_at"`
+	SearchedAt_2 pgtype.Timestamp `json:"searched_at_2"`
 }
 
 func (q *Queries) GetSearchLogByTime(ctx context.Context, arg GetSearchLogByTimeParams) ([]SearchLog, error) {
@@ -101,7 +106,7 @@ WHERE
     user_id = $1
 `
 
-func (q *Queries) GetSearchLogByUserId(ctx context.Context, userID pgtype.UUID) ([]SearchLog, error) {
+func (q *Queries) GetSearchLogByUserId(ctx context.Context, userID uuid.UUID) ([]SearchLog, error) {
 	rows, err := q.db.Query(ctx, getSearchLogByUserId, userID)
 	if err != nil {
 		return nil, err
